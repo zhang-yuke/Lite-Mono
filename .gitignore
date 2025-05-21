@@ -130,5 +130,6 @@ dmypy.json
 .pyre/
 
 # Pretrained model folder
-trained_models/
-test_image/
+pretrained_models/
+image/*.npy
+litemono/

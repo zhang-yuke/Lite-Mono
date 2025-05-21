@@ -8,6 +8,7 @@ import numpy as np
 import PIL.Image as pil
 import matplotlib as mpl
 import matplotlib.cm as cm
+import time
 
 import torch
 from torchvision import transforms, datasets
@@ -64,7 +65,8 @@ def test_simple(args):
         device = torch.device("cuda")
     else:
         device = torch.device("cpu")
-
+    print('Start predicting')
+    start_time = time.time()
     print("-> Loading model from ", args.load_weights_folder)
     encoder_path = os.path.join(args.load_weights_folder, "encoder.pth")
     decoder_path = os.path.join(args.load_weights_folder, "depth.pth")
@@ -164,7 +166,7 @@ def test_simple(args):
             # output_name = os.path.splitext(image_path)[0].split('/')[-1]
             scaled_disp, depth = disp_to_depth(disp, 0.1, 100)
 
-            name_dest_npy = os.path.join(output_directory, "{}_disp.npy".format(output_name))
+            name_dest_npy = os.path.join(output_directory, "{}_disp_large_{}.npy".format(output_name, args.model))
             np.save(name_dest_npy, scaled_disp.cpu().numpy())
 
             # Saving colormapped depth image
@@ -175,14 +177,16 @@ def test_simple(args):
             colormapped_im = (mapper.to_rgba(disp_resized_np)[:, :, :3] * 255).astype(np.uint8)
             im = pil.fromarray(colormapped_im)
 
-            name_dest_im = os.path.join(output_directory, "{}_disp.jpeg".format(output_name))
+            name_dest_im = os.path.join(output_directory, "{}_disp_large_{}.jpeg".format(output_name, args.model))
             im.save(name_dest_im)
 
             print("   Processed {:d} of {:d} images - saved predictions to:".format(
                 idx + 1, len(paths)))
             print("   - {}".format(name_dest_im))
             print("   - {}".format(name_dest_npy))
-
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+    print(f'Elapsed time: {elapsed_time:.3f} seconds')
 
     print('-> Done!')
 
