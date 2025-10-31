@@ -133,3 +133,5 @@ dmypy.json
 pretrained_models/
 image/*.npy
 litemono/
+**/._*
+model/
