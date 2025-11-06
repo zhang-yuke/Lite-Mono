@@ -101,23 +101,21 @@ def test_simple(args):
     depth_decoder.eval()
     dummy_input = torch.randn(1, 3, feed_height, feed_width).to(device) 
 
-    # MACsとParametersの計算
+    print(f"   Input size: Height {feed_height} pixels, Width {feed_width} pixels")
     print("   Calculating MACs and Parameters...")
     
-    # EncoderのMACs/Params計算
-    # encoder(dummy_input)の形式でprofile関数に渡す
+    # Calculate MACs/Params of Encoder
+    # encoder(dummy_input) -> profile
     macs_enc, params_enc = profile(encoder, inputs=(dummy_input, ), verbose=False) 
     
-    # DecoderのMACs/Params計算
-    # decoderはencoderの出力（features）を入力とするため、featuresを先に取得
+    # Calculate MACs/Params of Decoder
+    # Get features of encoder -> decoder
     dummy_features = encoder(dummy_input)
     macs_dec, params_dec = profile(depth_decoder, inputs=(dummy_features, ), verbose=False) 
 
-    # 合計の計算と表示
     total_macs = macs_enc + macs_dec
     total_params = params_enc + params_dec
     
-    # 読みやすい形式に変換 (例: 1000000000 -> 1.0G)
     macs_formatted, params_formatted = clever_format([total_macs, total_params], "%.3f")
     
     print(f"   Total MACs: {macs_formatted}")

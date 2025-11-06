@@ -131,7 +131,7 @@ dmypy.json
 
 # Pretrained model folder
 pretrained_models/
-image/*.npy
+image/
 litemono/
 **/._*
 model/
